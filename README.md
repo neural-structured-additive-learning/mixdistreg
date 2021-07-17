@@ -1,1 +1,1 @@
-# mixturedistreg
+# mixdistreg
