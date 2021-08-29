@@ -1,0 +1,17 @@
+Package: biggamlss
+Title: Fitting Generalized Linear Models for Location Scale and Shape for Large-Scale Data
+Version: 0.1
+Authors@R: c(
+    person("David", "Ruegamer", , "david.ruegamer@gmail.com", role = c("aut", "cre"))
+    )
+Description:
+    Allows for the specification of deep conditional transformation models
+Depends: R (>= 4.0.0)
+Imports:
+    deepregression
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+StagedInstall: no
+VignetteBuilder: knitr
