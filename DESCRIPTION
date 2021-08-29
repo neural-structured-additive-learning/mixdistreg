@@ -1,11 +1,12 @@
-Package: biggamlss
-Title: Fitting Generalized Linear Models for Location Scale and Shape for Large-Scale Data
+Package: mixdistreg
+Title: Fitting Neural Mixture Distributional Regression
 Version: 0.1
 Authors@R: c(
-    person("David", "Ruegamer", , "david.ruegamer@gmail.com", role = c("aut", "cre"))
+    person("David", "Ruegamer", , "david.ruegamer@gmail.com", role = c("aut", "cre")),
+    person("Florian", "Pfisterer", , "florian.pfisterer@stat.uni-muenchen.de", role = c("ctb"))
     )
 Description:
-    Allows for the specification of deep conditional transformation models
+    Fit mixture structured distributional regression using neural networks.
 Depends: R (>= 4.0.0)
 Imports:
     deepregression
