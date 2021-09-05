@@ -1,5 +1,5 @@
 library(testthat)
 library(deepregression)
-library(biggamlss)
+library(mixdistreg)
 
-test_check("biggamlss")
+test_check("mixdistreg")

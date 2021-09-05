@@ -1,3 +1,75 @@
+#' Same-same mixture distributional regression
+#' 
+#' Fit a mixture distributional regression with same family mixture
+#' and same predictors for each mixture
+#'
+#' @param y response
+#' @param family character; see \code{?deepregression}
+#' @param nr_comps integer; number of mixture components
+#' @param list_of_formulas a list of formulas for the 
+#' parameters of the distribution which is used in the mixture
+#' (i.e., for \code{family="normal"} only a list of two formulas
+#' is required). See also \code{?deepregression} for more details.
+#' @param formula_mixture formula for the the additive predictor 
+#' of the mixture component. Covariate-independent per default.
+#' @param list_of_deep_models see \code{?deepregression}
+#' @param data data.frame or list with data
+#' @param ... further arguments passed to \code{?deepregression}
+#' 
+#' @return a model of class \code{mixdistreg} and
+#' \code{deepregression}
+#'
+#' @export
+#' @import deepregression
+#'
+mixdistreg <- function(
+  y,
+  family = "normal",
+  nr_comps = 2L,
+  list_of_formulas,
+  formula_mixture = ~1,
+  list_of_deep_models,
+  data,
+  ...
+)
+{
+  
+  # create family
+  dist_fun <- mix_dist_maker(
+    nr_comps = nr_comps,
+    dist = family_to_tfd(family),
+    trafos_each_param = family_to_trafo(family)
+  )
+  
+  # define list_of_formulas for deepregression
+  org_len <- length(list_of_formulas) 
+    
+  list_of_formulas <- 
+    c(list(mixture = formula_mixture),
+      rep(list_of_formulas, nr_comps))
+  
+  names(list_of_deep_models)[-1] <- paste0(rep(names_families(family), nr_comps),
+                                           "_mix", rep(1:nr_comps, each=org_len))
+  
+  
+  
+  mod <- deepregression(
+    y = y,
+    data = data,
+    list_of_formulas = list_of_formulas,
+    list_of_deep_models = list_of_deep_models,
+    family = dist_fun,
+    from_distfun_to_dist = distfun_to_dist_mix(nr_comps, length(list_of_formulas)),
+    ...
+  )
+  
+  class(mod) <- c("mixdistreg", class(mod))
+  
+  return(mod)
+  
+}
+
+
 #' generate mixture distribution of same family
 #'
 #' @param dist tfp distribution
@@ -56,4 +128,28 @@ mix_dist_maker <- function(
     function(x) do.call(mixdist, trafo_fun(x))
   )
 
+}
+
+
+
+distfun_to_dist_mix <- function(nr_comps, nr_params){
+  function(dist_fun, preds)
+  {
+    
+    list_pred <- layer_lambda(preds,
+                              f = function(x)
+                              {
+                                tf$split(x, num_or_size_splits =
+                                           c(1L, as.integer(nr_params-1)),
+                                         axis = 1L)
+                              })
+    list_pred[[1]] <- list_pred[[1]] %>%
+      dense_layer(units = as.integer(nr_comps),
+                  activation = "softmax",
+                  use_bias = FALSE)
+    preds <- layer_concatenate(list_pred)
+    
+    return(distfun_to_dist(dist_fun, preds))
+    
+  }
 }
