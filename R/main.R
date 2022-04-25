@@ -21,6 +21,34 @@
 #'
 #' @export
 #' @import deepregression
+#' 
+#' @examples 
+#' n <- 1000
+#' data = data.frame(matrix(rnorm(4*n), c(n,4)))
+#' colnames(data) <- c("x1","x2","x3","xa")
+#' formula <- ~ 1 + deep_model(x1,x2,x3) + s(xa) + x1
+#'
+#' deep_model <- function(x) x %>%
+#' layer_dense(units = 32, activation = "relu", use_bias = FALSE) %>%
+#' layer_dropout(rate = 0.2) %>%
+#' layer_dense(units = 8, activation = "relu") %>%
+#' layer_dense(units = 1, activation = "linear")
+#'
+#' y <- rnorm(n) + data$xa^2 + data$x1
+#'
+#' mod <- mixdistreg(
+#'   list_of_formulas = list(loc = formula, scale = ~ 1),
+#'   nr_comps = 3,
+#'   data = data, y = y,
+#'   list_of_deep_models = list(deep_model = deep_model)
+#' )
+#'
+#' if(!is.null(mod)){
+#'
+#' # train for more than 10 epochs to get a better model
+#' mod %>% fit(epochs = 10, early_stopping = TRUE)
+#' 
+#' }
 #'
 mixdistreg <- function(
   y,
@@ -28,7 +56,7 @@ mixdistreg <- function(
   nr_comps = 2L,
   list_of_formulas,
   formula_mixture = ~1,
-  list_of_deep_models,
+  list_of_deep_models = NULL,
   data,
   ...
 )
@@ -44,11 +72,14 @@ mixdistreg <- function(
   # define list_of_formulas for deepregression
   org_len <- length(list_of_formulas) 
     
+  if(length(list_of_formulas) == 1)
+    list_of_formulas <- list_of_formulas[rep(1, nr_comps)]
+  
   list_of_formulas <- 
     c(list(mixture = formula_mixture),
       rep(list_of_formulas, nr_comps))
   
-  names(list_of_deep_models)[-1] <- paste0(rep(names_families(family), nr_comps),
+  names(list_of_formulas)[-1] <- paste0(rep(names_families(family), nr_comps),
                                            "_mix", rep(1:nr_comps, each=org_len))
   
   
@@ -109,15 +140,17 @@ mix_dist_maker <- function(
     c(probs = list(stack(x,1:nr_comps)),
       params = list(
         lapply(1:length(trafos_each_param),
-               function(i)
+               function(i){
+                 ind <- nr_comps +
+                   # first x for pis
+                   (i-1)*nr_comps +
+                   # then for each parameter
+                   (1:nr_comps)
                  stack(trafos_each_param[[i]](
-                   tf_stride_cols(x,nr_comps +
-                                    # first x for pis
-                                    (i-1)*nr_comps +
-                                    # then for each parameter
-                                    (1:nr_comps))
+                   tf_stride_cols(x,min(ind),max(ind))
                  )
                  )
+               }
         )
       )
     )
@@ -144,7 +177,7 @@ distfun_to_dist_mix <- function(nr_comps, nr_params){
                                          axis = 1L)
                               })
     list_pred[[1]] <- list_pred[[1]] %>%
-      dense_layer(units = as.integer(nr_comps),
+      layer_dense(units = as.integer(nr_comps),
                   activation = "softmax",
                   use_bias = FALSE)
     preds <- layer_concatenate(list_pred)
