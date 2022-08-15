@@ -6,9 +6,9 @@
 \title{Generates a general mixture distribution}
 \usage{
 gen_mix_dist_maker(
-  mix_dist_fun,
+  type = c("same", "general"),
   families = c("normal"),
-  nr_comps_not_dist = 1L,
+  nr_distributions = 1L,
   trafos_each_param = NULL,
   inflation_values = NULL
 )
@@ -20,7 +20,7 @@ samemix_dist_maker(family = "normal", nr_comps = 3, trafos_each_param = NULL)
 see the \code{family} argument of \code{deepregression}. Can be multiple
 distributions for a mixture of different distributions}
 
-\item{nr_comps_not_dist}{integer; defining the number of distributions
+\item{nr_distributions}{integer; defining the number of distributions
 to be mixed (including deterministic ones)}
 
 \item{trafos_each_param}{list of transformations applied before plugging
@@ -48,19 +48,24 @@ library(deepregression)
 # as family
 gen_mix_dist_maker(
   mix_dist_fun = tfd_mixture_same_family,
-  nr_comps_not_dist = 2L
+  nr_distributions = 2L
  )
  
 gen_mix_dist_maker(
   families = c("normal", "student_t"),
   trafos_each_param = 
-  list(function(x) x, 
-       function(x) tf$add(add_const, tfe(x)),
+  list(
+       list(function(x) x, 
+            function(x) tf$add(add_const, tfe(x))
+       ),
+  ),
+  list(
        function(x) x, 
        function(x) tf$add(add_const, tfe(x))
-       ),
+       )
+  ),
   mix_dist_fun = tfd_mixture,
-  nr_comps_not_dist = 2L
+  nr_distributions = 2L
  )
 
 }

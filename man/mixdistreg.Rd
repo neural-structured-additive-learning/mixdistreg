@@ -14,6 +14,7 @@ mixdistreg(
   list_of_deep_models = NULL,
   inflation_values = NULL,
   data,
+  trafos_each_param = NULL,
   ...
 )
 }
@@ -27,9 +28,11 @@ distributions for a mixture of different distributions (\code{type = "general"})
 \item{nr_comps}{integer; number of mixture components}
 
 \item{list_of_formulas}{a list of formulas for the 
-parameters of the distribution(s) which is/are used in the mixture
-(i.e., for \code{family="normal"} only a list of two formulas
-is required). See also \code{?deepregression} for more details.}
+parameters of the distribution(s) which are used in the mixture
+(i.e., for \code{family="normal"} a list of two formulas
+is required). The elements in the list first consist of all parameters for
+the first distribution, then all for the second distribution and so on.
+See also \code{?deepregression} for specification details for the formulas.}
 
 \item{formula_mixture}{formula for the the additive predictor 
 of the mixture component. Covariate-independent per default.}
@@ -48,5 +51,42 @@ a model of class \code{mixdistreg} and
 Fit a mixture distributional regression
 }
 \examples{
+
+n <- 1000
+data = data.frame(matrix(rnorm(4*n), c(n,4)))
+colnames(data) <- c("x1","x2","x3","xa")
+formula <- ~ 1 + deep_model(x1,x2,x3) + s(xa) + x1
+
+deep_model <- function(x) x \%>\%
+layer_dense(units = 32, activation = "relu", use_bias = FALSE) \%>\%
+layer_dropout(rate = 0.2) \%>\%
+layer_dense(units = 8, activation = "relu") \%>\%
+layer_dense(units = 1, activation = "linear")
+
+y <- rnorm(n) + data$xa^2 + data$x1
+
+mod <- mixdistreg(
+  families = c("normal", "student_t"),
+  type = "general",
+  list_of_formulas = list(
+    loc = formula, scale = ~ 1, 
+    df = formula
+    ),
+   
+  formula_mixture = ~ 1 + x1,
+  data = data, 
+  y = y,
+  list_of_deep_models = list(deep_model = deep_model),
+  inflation_values = NULL,
+  optimizer = optimizer_adam(learning_rate=1e-6)
+)
+
+if(!is.null(mod)){
+
+# train for more than 10 epochs to get a better model
+mod \%>\% fit(epochs = 10, early_stopping = TRUE)
+
+}
+
 
 }

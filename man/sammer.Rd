@@ -58,7 +58,7 @@ layer_dense(units = 1, activation = "linear")
 
 y <- rnorm(n) + data$xa^2 + data$x1
 
-mod <- mixdistreg(
+mod <- sammer(
   list_of_formulas = list(loc = formula, scale = ~ 1),
   nr_comps = 3,
   data = data, y = y,

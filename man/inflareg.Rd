@@ -85,7 +85,8 @@ mod <- inflareg(
   formula_inflation = ~ 1 + x1,
   data = data, 
   y = y,
-  list_of_deep_models = list(deep_model = deep_model)
+  list_of_deep_models = list(deep_model = deep_model),
+  inflation_values = 1.0
 )
 
 if(!is.null(mod)){
@@ -95,4 +96,19 @@ mod \%>\% fit(epochs = 10, early_stopping = TRUE)
 
 }
 
+mod <- inflareg(
+  list_of_formulas = list(loc = formula, scale = ~ 1),
+  formula_inflation = ~ 1 + x1,
+  data = data, 
+  y = y,
+  list_of_deep_models = list(deep_model = deep_model),
+  inflation_values = c(0.0,1.0)
+)
+
+if(!is.null(mod)){
+
+# train for more than 10 epochs to get a better model
+mod \%>\% fit(epochs = 10, early_stopping = TRUE)
+
+}
 }
