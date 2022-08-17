@@ -31,12 +31,14 @@ coef.mixdistreg <- function(
     )
 {
   
+  class(object) <- class(object)[-1]
+  
   if(which_dist == "mixture" | which_dist == 1)
     return(
-      coef.deepregression(object = object,
-                          which_param = 1L,
-                          type = type,
-                          ...)
+      coef(object = object,
+           which_param = 1L,
+           type = type,
+           ...)
     )
   
   # else: other dist param
@@ -47,10 +49,10 @@ coef.mixdistreg <- function(
     which_param
   )
   
-  coef.deepregression(object = object,
-                      which_param = which_param,
-                      type = type,
-                      ...)  
+  coef(object = object,
+       which_param = which_param,
+       type = type,
+       ...)  
     
 }
 
@@ -72,9 +74,11 @@ plot.mixdistreg <- function(
 )
 {
   
+  class(x) <- class(x)[-1]
+  
   if(which_dist == "mixture" | which_dist == 1)
     return(
-      plot.deepregression(
+      plot(
         x = x,
         which = which,
         which_param = 1L,
@@ -95,7 +99,7 @@ plot.mixdistreg <- function(
     which_param
   )
   
-  plot.deepregression(
+  plot(
     x = x,
     which = which,
     which_param = which_param,

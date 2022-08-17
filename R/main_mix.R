@@ -62,7 +62,7 @@
 #' 
 #'
 #' @export
-#' @import deepregression
+#' @import deepregression tensorflow tfprobability
 mixdistreg <- function(
     y,
     families = c("normal"),
