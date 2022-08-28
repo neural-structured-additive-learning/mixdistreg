@@ -80,14 +80,11 @@ gen_mix_dist_maker <- function(
       mix = tfd_categorical(probs = probs)
       params = lapply(1:length(trafos_each_param[[1]]),
                       function(i){
-                        ind <- (i-1)*nr_distributions +
-                          # then for each parameter
-                          (1:nr_distributions)
+                        ind <- seq(i, i+((nr_distributions-1)*length(trafos_each_param[[1]])),
+                                   by = length(trafos_each_param[[1]]))
                         stack(
-                          #trafos_each_param[[1]][[i]](
-                          tf_stride_cols(params,min(ind),max(ind))
-                        # )
-                        )
+                          tf$keras$layers$Lambda(function(x) x[,ind])(params)
+                          )
                       }
       )
       

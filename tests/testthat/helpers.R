@@ -1,8 +1,9 @@
 context("Helper Functions and Methods")
 
-check_funs <- function(trafo_fun, sizes, mixdist)
+check_funs <- function(trafo_fun, sizes, mixdist, type=c("general", "same"))
 {
   
+  type = match.arg(type)
   
   total_cols <- length(sizes) + sum(sizes)
   n_rows <- 4
@@ -29,9 +30,13 @@ check_funs <- function(trafo_fun, sizes, mixdist)
     round(rowSums(as.array(transformed_x$probs)[,1,]), 5),
     rep(1, n_rows)))
   
+  tc <- switch(type,
+               general = "tensorflow_probability.python.distributions.mixture.Mixture",
+               same = "tensorflow_probability.python.distributions.mixture_same_family.MixtureSameFamily")
+  
   # check dist
   expect_true(inherits(do.call(mixdist, transformed_x),
-                       "tensorflow_probability.python.distributions.mixture.Mixture"))
+                       tc))
   
 }
 
@@ -80,6 +85,17 @@ test_that("gen_mix_dist_maker", {
   trafo_fun <- get("trafo_fun", environment(res))
   # check
   check_funs(trafo_fun, sizes=c(2,1,3), mixdist)
+  
+  res <- gen_mix_dist_maker(
+    type = "same",
+    families = c("normal"),
+    nr_distributions = 3L
+  )
+  # get functions in res
+  mixdist <- get("mixdist", environment(res))
+  trafo_fun <- get("trafo_fun", environment(res))
+  # check
+  check_funs(trafo_fun, sizes=c(2,1,3), mixdist, "same")
   
   
 })

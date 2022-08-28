@@ -6,6 +6,8 @@
 #' @param families character (vector); 
 #' see the \code{family} argument of \code{deepregression}. Can be multiple
 #' distributions for a mixture of different distributions (\code{type = "general"})
+#' @param type character; either \code{"same"} if mixture of same families or 
+#' \code{"general"} for a general mixture
 #' @param nr_comps integer; number of mixture components
 #' @param list_of_formulas a list of formulas for the 
 #' parameters of the distribution(s) which are used in the mixture
@@ -16,7 +18,12 @@
 #' @param formula_mixture formula for the the additive predictor 
 #' of the mixture component. Covariate-independent per default.
 #' @param list_of_deep_models see \code{?deepregression}
+#' @param inflation_values see \code{?inflareg}
 #' @param data data.frame or list with data
+#' @param trafos_each_param transformation for each parameter; see
+#' \code{?gen_mix_dist_maker}.
+#' @param entropy_penalty numeric; if not NULL, will add an entrop penalty
+#' to the negative log-likelihood to penalize the amount of mixtures
 #' @param ... further arguments passed to \code{?deepregression}
 #' 
 #' @return a model of class \code{mixdistreg} and
@@ -74,6 +81,7 @@ mixdistreg <- function(
     inflation_values = NULL,
     data,
     trafos_each_param = NULL,
+    entropy_penalty = NULL,
     ...
 )
 {
@@ -101,7 +109,7 @@ mixdistreg <- function(
     c(list(mixture = formula_mixture),
       list_of_formulas)
   
-  mod <- deepregression(
+  args <- c(list(
     y = y,
     data = data,
     list_of_formulas = list_of_formulas,
@@ -109,9 +117,32 @@ mixdistreg <- function(
     family = dist_fun,
     # from_distfun_to_dist = distfun_to_dist_mix(nr_comps,
     #                                            length(list_of_formulas)),
-    output_dim = c(nr_comps, rep(1L, length(list_of_formulas)-1L)),
-    ...
-  )
+    output_dim = c(nr_comps, rep(1L, length(list_of_formulas)-1L))
+  ),list(...))
+  
+  if(!is.null(entropy_penalty)){
+    
+    args$loss <- function(
+    family,
+    ind_fun = function(x) tfd_independent(x),
+    weights = NULL
+    ){
+      
+      # define weights to be equal to 1 if not given
+      if(is.null(weights)) weights <- 1
+      
+      negloglik <- function(y, dist){
+        pis <- dist$mixture_distribution$probs
+        - weights * (dist %>% ind_fun() %>% tfd_log_prob(y)) - entropy_penalty * (tf$reduce_sum(pis * log(pis),  axis=1L))
+      }
+      
+      return(negloglik)
+      
+    }
+
+  }
+  
+  mod <- do.call("deepregression", args)
   
   class(mod) <- c("mixdistreg", class(mod))
   

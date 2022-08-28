@@ -143,3 +143,16 @@ match_which_param <- function(families, trafos, which_dist, which_param){
   return(which_param)
   
 }
+
+#' @param object mixdistreg object
+#' @param convert_fun function to convert Tensor
+#' @export
+#' @rdname methodMix
+#'
+get_pis <- function(object, convert_fun=as.array)
+{
+  
+  dist_dr <- get_distribution(object)
+  return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
+  
+}
