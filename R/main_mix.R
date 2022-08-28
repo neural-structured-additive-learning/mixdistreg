@@ -122,24 +122,12 @@ mixdistreg <- function(
   
   if(!is.null(entropy_penalty)){
     
-    args$loss <- function(
-    family,
-    ind_fun = function(x) tfd_independent(x),
-    weights = NULL
-    ){
-      
-      # define weights to be equal to 1 if not given
-      if(is.null(weights)) weights <- 1
-      
-      negloglik <- function(y, dist){
+    args$loss <- function(y, dist){
         pis <- dist$mixture_distribution$probs
-        - weights * (dist %>% ind_fun() %>% tfd_log_prob(y)) - entropy_penalty * (tf$reduce_sum(pis * log(pis),  axis=1L))
+        -1 * (dist %>% tfd_independent() %>% tfd_log_prob(y)) - 
+          tf$constant(entropy_penalty) * (tf$reduce_sum(pis * log(pis)))#,  axis=1L))
       }
-      
-      return(negloglik)
-      
-    }
-
+    
   }
   
   mod <- do.call("deepregression", args)
