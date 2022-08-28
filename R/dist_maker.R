@@ -83,9 +83,10 @@ gen_mix_dist_maker <- function(
                         ind <- (i-1)*nr_distributions +
                           # then for each parameter
                           (1:nr_distributions)
-                        stack(trafos_each_param[[1]][[i]](
+                        stack(
+                          #trafos_each_param[[1]][[i]](
                           tf_stride_cols(params,min(ind),max(ind))
-                        )
+                        # )
                         )
                       }
       )
@@ -138,6 +139,8 @@ gen_mix_dist_maker <- function(
         addpart +
         # then for each parameter
         (1:length(trafos_each_param[[i]]))
+      
+      # print(ind)
       
       for(j in 1:length(trafos_each_param[[i]])){
         

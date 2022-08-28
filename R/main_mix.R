@@ -191,11 +191,10 @@ sammer <- function(
 )
 {
   
-  # define list_of_formulas for deepregression
-  org_len <- length(list_of_formulas) 
+  org_len <- length(list_of_formulas)
     
-  if(org_len == 1)
-    list_of_formulas <- list_of_formulas[rep(1, nr_comps)]
+  # if(org_len == 1)
+  #   list_of_formulas <- list_of_formulas[rep(1, nr_comps)]
   
   list_of_formulas <- rep(list_of_formulas, nr_comps)
   
