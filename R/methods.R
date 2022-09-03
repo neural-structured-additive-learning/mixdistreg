@@ -93,8 +93,8 @@ plot.mixdistreg <- function(
   
   # else: other dist param
   which_param <- match_which_param(
-    families = object$init_params$mixture_specification$families,
-    trafos = object$init_params$mixture_specification$trafos_each_param,
+    families = x$init_params$mixture_specification$families,
+    trafos = x$init_params$mixture_specification$trafos_each_param,
     which_dist,
     which_param
   )
