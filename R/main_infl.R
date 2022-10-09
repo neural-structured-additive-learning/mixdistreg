@@ -18,7 +18,7 @@
 #' @param data data.frame or list with data
 #' @param ... further arguments passed to \code{?deepregression}
 #' 
-#' @return a model of class \code{zeroinfreg} and
+#' @return a model of class \code{mixdistreg}, \code{inflareg} and
 #' \code{deepregression}
 #'
 #' @rdname inflareg
@@ -83,7 +83,7 @@ inflareg <- function(
 )
 {
   
-  mixdistreg(y = y,
+  mod <- mixdistreg(y = y,
              families = c(family, rep("deterministic", 
                                       length(inflation_values))),
              type = "general",
@@ -95,6 +95,10 @@ inflareg <- function(
              data = data,
              ...
   )
+  
+  class(mod) <- c(class(mod), "inflareg")
+  
+  return(mod)
   
 }
 

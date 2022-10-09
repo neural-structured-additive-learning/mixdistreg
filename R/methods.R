@@ -145,14 +145,34 @@ match_which_param <- function(families, trafos, which_dist, which_param){
 }
 
 #' @param object mixdistreg object
-#' @param convert_fun function to convert Tensor
+#' @param convert_fun function; to convert Tensor
+#' @param posterior logical; should the a posterior probabilities
+#' be returned or the estimated values; default is FALSE
+#' @param data data.frame or list; optional, providing new data
+#' @param this_y vector; optional, new outcome corresponding to data
 #' @export
+#' @return a matrix with columns corresponding to clusters and values
+#' in the matrix to probabilities
 #' @rdname methodMix
 #'
-get_pis <- function(object, convert_fun=as.array)
+get_pis <- function(object, convert_fun=as.array, data=NULL, 
+                    this_y=NULL, posterior=FALSE)
 {
   
-  dist_dr <- get_distribution(object)
-  return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
+  dist_dr <- get_distribution(object, data=data)
+  if(!posterior) return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
+  
+  if(posterior & !inherits(object, "sammer"))
+    stop("A posterior probabilities not yet implented for non-same mixture models.")
+  
+  if(!is.null(data) && is.null(this_y)) stop("Must provide outcome this_y if data is provided.")
+  outcome <- if(is.null(data)) object$init_params$y else this_y
+  
+  return(
+    as.matrix(tf$squeeze(
+    dist_dr$submodules[[1]]$prob(
+      array(outcome, dim = c(NROW(outcome),1,1))), 
+    axis=1L))
+  )
   
 }

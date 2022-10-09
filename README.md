@@ -1,4 +1,4 @@
-# mixdistreg: Add-on package for `deepregression` to fit mixture families
+# mixdistreg: A Package to fit Mixture Models using Adaptive First-order Methods
 
 `mixdistreg` extends the set of families in `deepregression` to mixtures of distributions. See [Neural Mixture Distributional Regression](https://arxiv.org/abs/2010.06889) for details.
 

@@ -164,7 +164,7 @@ mixdistreg <- function(
 #' @param data data.frame or list with data
 #' @param ... further arguments passed to \code{?deepregression}
 #' 
-#' @return a model of class \code{mixdistreg} and
+#' @return a model of class \code{mixdistreg}, \code{sammer} and
 #' \code{deepregression}
 #'
 #' @export
@@ -220,18 +220,20 @@ sammer <- function(
   names(list_of_formulas) <- paste0(rep(names_families(family), nr_comps),
                                     "_mix", rep(1:nr_comps, each=org_len))
   
-  return(
-    mixdistreg(y = y,
-    families = family,
-    type = "same",
-    nr_comps = nr_comps,
-    list_of_formulas = list_of_formulas,
-    formula_mixture = formula_mixture,
-    list_of_deep_models = list_of_deep_models,
-    data = data,
-    ...
-    )
+  mod <- mixdistreg(y = y,
+                    families = family,
+                    type = "same",
+                    nr_comps = nr_comps,
+                    list_of_formulas = list_of_formulas,
+                    formula_mixture = formula_mixture,
+                    list_of_deep_models = list_of_deep_models,
+                    data = data,
+                    ...
   )
+  
+  class(mod) <- c(class(mod), "sammer")
+  
+  return(mod)
   
 }
 
