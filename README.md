@@ -7,10 +7,11 @@ Detailed examples for package usage will follow soon.
 ## How to cite?
 
     @misc{ruegamer.nmdr.2020,
-      title={Neural Mixture Distributional Regression}, 
-      author={David R\"ugamer and Florian Pfisterer and Bernd Bischl},
-      year={2020},
-      eprint={2010.06889},
-      archivePrefix={arXiv},
-      primaryClass={stat.CO}
+    author={R\"ugamer, David and Pfisterer, Florian and Bischl, Bernd and Gr\"un, Bettina},
+    title = {{Mixture of Experts Distributional Regression: Implementation Using Robust Estimation with Adaptive First-order Methods}},
+    year = {2022},
+    eprint={2211.09875},
+    journal={arXiv},
+    archivePrefix={arXiv},
+    doi = {10.48550/ARXIV.2211.09875},
     }
