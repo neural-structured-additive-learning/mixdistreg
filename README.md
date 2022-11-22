@@ -6,7 +6,7 @@ Detailed examples for package usage will follow soon.
 
 ## How to cite?
 
-    @misc{ruegamer.nmdr.2020,
+    @misc{ruegamer2022mixture,
     author={R\"ugamer, David and Pfisterer, Florian and Bischl, Bernd and Gr\"un, Bettina},
     title = {{Mixture of Experts Distributional Regression: Implementation Using Robust Estimation with Adaptive First-order Methods}},
     year = {2022},
