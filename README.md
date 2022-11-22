@@ -1,6 +1,6 @@
 # mixdistreg: A Package to fit Mixture Models using Adaptive First-order Methods
 
-`mixdistreg` extends the set of families in `deepregression` to mixtures of distributions. See [Neural Mixture Distributional Regression](https://arxiv.org/abs/2010.06889) for details.
+`mixdistreg` extends the set of families in `deepregression` to mixtures of distributions. See [Neural Mixture Distributional Regression](https://arxiv.org/abs/2211.09875) for details.
 
 Detailed examples for package usage will follow soon.
 
