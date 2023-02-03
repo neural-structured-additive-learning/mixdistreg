@@ -167,12 +167,12 @@ get_pis <- function(object, convert_fun=as.array, data=NULL,
     if("mixture_distribution" %in% names(dist_dr))
       return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
     
-    return(dist_dr$submodules[[1]]$probs)
+    return(convert_fun(dist_dr$submodules[[1]]$probs)[,1,])
     
   }
   
-  if(posterior & !inherits(object, "sammer"))
-    stop("A posterior probabilities not yet implented for non-same mixture models.")
+  if(posterior & inherits(object, "inflareg"))
+    stop("A posterior probabilities not yet implented for inflareg models.")
   
   if(!is.null(data) && is.null(this_y)) stop("Must provide outcome this_y if data is provided.")
   outcome <- if(is.null(data)) object$init_params$y else this_y
