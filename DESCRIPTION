@@ -7,6 +7,7 @@ Authors@R: c(
     )
 Description:
     Fit mixture structured distributional regression using neural networks.
+Depends:
     R (>= 4.0.0), 
     tensorflow (>= 2.2.0), 
     keras (>= 2.2.0), 
