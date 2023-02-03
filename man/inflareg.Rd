@@ -46,7 +46,7 @@ for the probability of (each) inflation}
 \item{...}{see \code{?inflareg}}
 }
 \value{
-a model of class \code{zeroinfreg} and
+a model of class \code{mixdistreg}, \code{inflareg} and
 \code{deepregression}
 }
 \description{

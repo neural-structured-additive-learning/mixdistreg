@@ -127,6 +127,8 @@ match_which_param <- function(families, trafos, which_dist, which_param){
     
   }
   
+  if(length(families)==1) 
+    families <- rep(families, length(trafos))
   possible_chars <- c("mixture", families)
   if(is.character(which_dist)){
     which_dist <- which(which_dist == possible_chars)
@@ -176,3 +178,53 @@ get_pis <- function(object, convert_fun=as.array, data=NULL,
   )
   
 }
+
+#' @param object mixdistreg object
+#' @param convert_fun function; to convert Tensor
+#' @param data data.frame or list; optional, providing new data
+#' @param what character; specifying what object from the fitted distribution
+#' to return. Can be one of the following: \code{"means"} for the means of all
+#' distributions, \code{"stddev"} for the standard deviation of all
+#' distributions, \code{"quantile"} for the quantile which is provided in
+#' the argument \code{value}, \code{"cdf"} for values of the
+#' CDFs evaluated at \code{value}(s), \code{"prob"} for the
+#' pdfs at \code{value}(s), \code{"loc"} for the distributions' location or
+#' \code{"scale"} for the distributions' scale.
+#' @param value numeric vector; value(s) provided for different functions specified 
+#' in \code{what}
+#' @export
+#' @return a matrix 
+#' @rdname methodMix
+#'
+get_stats_mixcomps <- function(object, convert_fun=as.matrix, 
+                               data = NULL,
+                               what, value = NULL)
+{
+  
+  mixcomps <- get_distribution(object, data = data)$submodules[[1]]
+  
+  if(!inherits(object, "sammer"))
+    stop("Function currently only implemented for same-mixture models.")
+
+  if(length(value)>1){ 
+    shape_dist <- mixcomps$batch_shape$as_list()
+    if(length(value) != shape_dist[1]) stop("value must be either scalar or of size nrow(data)")
+    # broadcast to correct shape
+    value <- array(rep(value, shape_dist[3]), dim = shape_dist)
+  }
+  
+  res <- switch(what,
+         means = tf$squeeze(mixcomps$mean()),
+         stddev = tf$squeeze(mixcomps$stddev()),
+         quantile = tf$squeeze(mixcomps$quantile(value = value)),
+         cdf = tf$squeeze(mixcomps$cdf(value = value)),
+         prob = tf$squeeze(mixcomps$prob(value = value)),
+         loc = tf$squeeze(mixcomps$loc()),
+         scale = tf$squeeze(mixcomps$scale())
+         )
+  
+  return(convert_fun(res))
+  
+}
+
+

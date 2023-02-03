@@ -3,6 +3,8 @@
 \name{coef.mixdistreg}
 \alias{coef.mixdistreg}
 \alias{plot.mixdistreg}
+\alias{get_pis}
+\alias{get_stats_mixcomps}
 \title{Generic methods for mixdistreg objects}
 \usage{
 \method{coef}{mixdistreg}(object, which_dist = "mixture", which_param = 1L, type = NULL, ...)
@@ -18,6 +20,22 @@
   type = "b",
   get_weight_fun = get_weight_by_name,
   ...
+)
+
+get_pis(
+  object,
+  convert_fun = as.array,
+  data = NULL,
+  this_y = NULL,
+  posterior = FALSE
+)
+
+get_stats_mixcomps(
+  object,
+  convert_fun = as.matrix,
+  data = NULL,
+  what,
+  value = NULL
 )
 }
 \arguments{
@@ -36,6 +54,33 @@ for the second normal distribution)}
 \item{type}{see \code{?coef.deepregression}}
 
 \item{...}{further arguments, passed to fit, plot or predict function}
+
+\item{convert_fun}{function; to convert Tensor}
+
+\item{data}{data.frame or list; optional, providing new data}
+
+\item{this_y}{vector; optional, new outcome corresponding to data}
+
+\item{posterior}{logical; should the a posterior probabilities
+be returned or the estimated values; default is FALSE}
+
+\item{what}{character; specifying what object from the fitted distribution
+to return. Can be one of the following: \code{"means"} for the means of all
+distributions, \code{"stddev"} for the standard deviation of all
+distributions, \code{"quantile"} for the quantile which is provided in
+the argument \code{value}, \code{"cdf"} for values of the
+CDFs evaluated at \code{value}(s), \code{"prob"} for the
+pdfs at \code{value}(s), \code{"loc"} for the distributions' location or
+\code{"scale"} for the distributions' scale.}
+
+\item{value}{numeric vector; value(s) provided for different functions specified 
+in \code{what}}
+}
+\value{
+a matrix with columns corresponding to clusters and values
+in the matrix to probabilities
+
+a matrix
 }
 \description{
 The main difference to methods from deepregression

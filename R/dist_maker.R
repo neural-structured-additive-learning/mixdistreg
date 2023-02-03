@@ -20,7 +20,7 @@
 #' # a function that can be passed to deepregression
 #' # as family
 #' gen_mix_dist_maker(
-#'   mix_dist_fun = tfd_mixture_same_family,
+#'   type = "same",
 #'   nr_distributions = 2L
 #'  )
 #'  
@@ -37,7 +37,7 @@
 #'        function(x) tf$add(add_const, tfe(x))
 #'        )
 #'   ),
-#'   mix_dist_fun = tfd_mixture,
+#'   type = "general",
 #'   nr_distributions = 2L
 #'  )
 #' 

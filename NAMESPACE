@@ -3,6 +3,8 @@
 S3method(coef,mixdistreg)
 S3method(plot,mixdistreg)
 export(gen_mix_dist_maker)
+export(get_pis)
+export(get_stats_mixcomps)
 export(inflareg)
 export(mixdistreg)
 export(oinreg)

@@ -37,7 +37,7 @@ of the mixture component. Covariate-independent per default.}
 \item{...}{further arguments passed to \code{?deepregression}}
 }
 \value{
-a model of class \code{mixdistreg} and
+a model of class \code{mixdistreg}, \code{sammer} and
 \code{deepregression}
 }
 \description{
