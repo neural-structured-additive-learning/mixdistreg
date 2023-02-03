@@ -162,7 +162,14 @@ get_pis <- function(object, convert_fun=as.array, data=NULL,
 {
   
   dist_dr <- get_distribution(object, data=data)
-  if(!posterior) return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
+  if(!posterior){ 
+    
+    if("mixture_distribution" %in% names(dist_dr))
+      return(convert_fun(dist_dr$mixture_distribution$probs)[,1,])
+    
+    return(dist_dr$submodules[[1]]$probs)
+    
+  }
   
   if(posterior & !inherits(object, "sammer"))
     stop("A posterior probabilities not yet implented for non-same mixture models.")
@@ -173,7 +180,7 @@ get_pis <- function(object, convert_fun=as.array, data=NULL,
   return(
     as.matrix(tf$squeeze(
     dist_dr$submodules[[1]]$prob(
-      array(outcome, dim = c(NROW(outcome),1,1))), 
+      array(outcome, dim = dist_dr$submodules[[1]]$batch_shape$as_list())), 
     axis=1L))
   )
   
@@ -201,29 +208,59 @@ get_stats_mixcomps <- function(object, convert_fun=as.matrix,
                                what, value = NULL)
 {
   
-  mixcomps <- get_distribution(object, data = data)$submodules[[1]]
-  
-  if(!inherits(object, "sammer"))
-    stop("Function currently only implemented for same-mixture models.")
-
-  if(length(value)>1){ 
-    shape_dist <- mixcomps$batch_shape$as_list()
-    if(length(value) != shape_dist[1]) stop("value must be either scalar or of size nrow(data)")
-    # broadcast to correct shape
-    value <- array(rep(value, shape_dist[3]), dim = shape_dist)
+  if(inherits(object, "sammer")){
+    
+    mixcomps <- get_distribution(object, data = data)$submodules[[1]]
+    
+    if(length(value)>1){ 
+      shape_dist <- mixcomps$batch_shape$as_list()
+      if(length(value) != shape_dist[1]) stop("value must be either scalar or of size nrow(data)")
+      # broadcast to correct shape
+      value <- array(rep(value, shape_dist[3]), dim = shape_dist)
+    }
+    
+    res <- convert_fun(
+      switch(what,
+             means = tf$squeeze(mixcomps$mean()),
+             stddev = tf$squeeze(mixcomps$stddev()),
+             quantile = tf$squeeze(mixcomps$quantile(value = value)),
+             cdf = tf$squeeze(mixcomps$cdf(value = value)),
+             prob = tf$squeeze(mixcomps$prob(value = value)),
+             loc = tf$squeeze(mixcomps$loc()),
+             scale = tf$squeeze(mixcomps$scale())
+      )
+    )
+    
+  }else{
+    
+    nr_dist <- length(object$init_params$mixture_specification$families)
+    mixcomps <- get_distribution(object, data = data)$submodules[2:(nr_dist+1)]
+    
+    if(length(value)>1){ 
+      nrows <- mixcomps[[1]]$batch_shape$as_list()[1]
+      if(length(value) != nrows) stop("value must be either scalar or of size nrow(data)")
+      # broadcast to correct shape
+      value <- matrix(value)
+    }
+    
+    res <- sapply(1:length(mixcomps), function(i)
+      convert_fun(
+        switch(what,
+               means = tf$squeeze(mixcomps[[i]]$mean()),
+               stddev = tf$squeeze(mixcomps[[i]]$stddev()),
+               quantile = tf$squeeze(mixcomps[[i]]$quantile(value = value)),
+               cdf = tf$squeeze(mixcomps[[i]]$cdf(value = value)),
+               prob = tf$squeeze(mixcomps[[i]]$prob(value = value)),
+               loc = tf$squeeze(mixcomps[[i]]$loc()),
+               scale = tf$squeeze(mixcomps[[i]]$scale())
+        )
+      )
+    )
+    
+    
   }
   
-  res <- switch(what,
-         means = tf$squeeze(mixcomps$mean()),
-         stddev = tf$squeeze(mixcomps$stddev()),
-         quantile = tf$squeeze(mixcomps$quantile(value = value)),
-         cdf = tf$squeeze(mixcomps$cdf(value = value)),
-         prob = tf$squeeze(mixcomps$prob(value = value)),
-         loc = tf$squeeze(mixcomps$loc()),
-         scale = tf$squeeze(mixcomps$scale())
-         )
-  
-  return(convert_fun(res))
+  return(res)
   
 }
 
