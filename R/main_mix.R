@@ -26,6 +26,8 @@
 #' to the negative log-likelihood to penalize the amount of mixtures
 #' @param ... further arguments passed to \code{?deepregression}
 #' 
+#' @import keras tensorflow tfprobability deepregression
+#' 
 #' @return a model of class \code{mixdistreg} and
 #' \code{deepregression}
 #' 

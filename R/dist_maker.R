@@ -195,7 +195,7 @@ samemix_dist_maker <- function(
 
   return(
     gen_mix_dist_maker(
-      mix_dist_fun = tfd_mixture_same_family,
+      type = "same",
       family = family,
       nr_distributions = nr_comps,
       trafos_each_param = trafos_each_param
