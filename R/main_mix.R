@@ -5,9 +5,7 @@
 #' @param y response
 #' @param families character (vector); 
 #' see the \code{family} argument of \code{deepregression}. Can be multiple
-#' distributions for a mixture of different distributions (\code{type = "general"})
-#' @param type character; either \code{"same"} if mixture of same families or 
-#' \code{"general"} for a general mixture
+#' distributions for a mixture of different distributions 
 #' @param nr_comps integer; number of mixture components
 #' @param list_of_formulas a list of formulas for the 
 #' parameters of the distribution(s) which are used in the mixture
@@ -48,7 +46,6 @@
 #'
 #' mod <- mixdistreg(
 #'   families = c("normal", "student_t"),
-#'   type = "general",
 #'   list_of_formulas = list(
 #'     loc = formula, scale = ~ 1, 
 #'     df = formula
@@ -75,7 +72,6 @@
 mixdistreg <- function(
     y,
     families = c("normal"),
-    type = c("same", "general"),
     nr_comps = 2L,
     list_of_formulas,
     formula_mixture = ~1,
@@ -87,12 +83,9 @@ mixdistreg <- function(
     ...
 )
 {
-  
-  type <- match.arg(type)
 
   # create family
   dist_fun <- gen_mix_dist_maker(
-    type = type,
     families = families,
     nr_distributions = nr_comps,
     trafos_each_param = trafos_each_param,
@@ -139,7 +132,6 @@ mixdistreg <- function(
   mod$init_params$mixture_specification <- 
     list(
       families = families,
-      type = type,
       inflation_values = inflation_values,
       trafos_each_param = tep
     )
@@ -224,7 +216,6 @@ sammer <- function(
   
   mod <- mixdistreg(y = y,
                     families = family,
-                    type = "same",
                     nr_comps = nr_comps,
                     list_of_formulas = list_of_formulas,
                     formula_mixture = formula_mixture,

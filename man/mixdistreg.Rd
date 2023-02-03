@@ -7,7 +7,6 @@
 mixdistreg(
   y,
   families = c("normal"),
-  type = c("same", "general"),
   nr_comps = 2L,
   list_of_formulas,
   formula_mixture = ~1,
@@ -24,10 +23,7 @@ mixdistreg(
 
 \item{families}{character (vector); 
 see the \code{family} argument of \code{deepregression}. Can be multiple
-distributions for a mixture of different distributions (\code{type = "general"})}
-
-\item{type}{character; either \code{"same"} if mixture of same families or 
-\code{"general"} for a general mixture}
+distributions for a mixture of different distributions}
 
 \item{nr_comps}{integer; number of mixture components}
 
@@ -79,7 +75,6 @@ y <- rnorm(n) + data$xa^2 + data$x1
 
 mod <- mixdistreg(
   families = c("normal", "student_t"),
-  type = "general",
   list_of_formulas = list(
     loc = formula, scale = ~ 1, 
     df = formula

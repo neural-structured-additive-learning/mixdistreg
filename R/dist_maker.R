@@ -20,7 +20,6 @@
 #' # a function that can be passed to deepregression
 #' # as family
 #' gen_mix_dist_maker(
-#'   type = "same",
 #'   nr_distributions = 2L
 #'  )
 #'  
@@ -37,7 +36,6 @@
 #'        function(x) tf$add(add_const, tfe(x))
 #'        )
 #'   ),
-#'   type = "general",
 #'   nr_distributions = 2L
 #'  )
 #' 
@@ -45,14 +43,14 @@
 #' @rdname dist_maker
 #' 
 gen_mix_dist_maker <- function(
-    type = c("same", "general"),
     families = c("normal"),
     nr_distributions = 1L,
     trafos_each_param = NULL,
     inflation_values = NULL
 ){
   
-  type <- match.arg(type)
+  type <- ifelse(length(families)==1 & nr_distributions>1,
+                 "same", "general")
   
   stack <- function(x,ind=1:nr_distributions) tf$stack(
     lapply(ind, function(j)
@@ -195,7 +193,6 @@ samemix_dist_maker <- function(
 
   return(
     gen_mix_dist_maker(
-      type = "same",
       families = family,
       nr_distributions = nr_comps,
       trafos_each_param = trafos_each_param

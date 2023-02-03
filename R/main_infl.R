@@ -86,7 +86,6 @@ inflareg <- function(
   mod <- mixdistreg(y = y,
              families = c(family, rep("deterministic", 
                                       length(inflation_values))),
-             type = "general",
              nr_comps = 1L + length(inflation_values),
              list_of_formulas = list_of_formulas,
              formula_mixture = formula_inflation,
