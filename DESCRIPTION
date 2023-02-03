@@ -12,6 +12,9 @@ Description:
     keras (>= 2.2.0), 
     tfprobability (>= 0.15),
     deepregression
+Suggests:
+    testthat,
+    knitr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
