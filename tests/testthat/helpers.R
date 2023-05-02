@@ -43,7 +43,6 @@ check_funs <- function(trafo_fun, sizes, mixdist, type=c("general", "same"))
 test_that("gen_mix_dist_maker", {
 
   res <- gen_mix_dist_maker(
-    type = "general",
     families = c("normal", "normal"),
     nr_distributions = 2L
   )
@@ -54,7 +53,6 @@ test_that("gen_mix_dist_maker", {
   check_funs(trafo_fun, sizes=c(2,2), mixdist)
   
   res <- gen_mix_dist_maker(
-    type = "general",
     families = c("normal", "student_t"),
     nr_distributions = 2L
   )
@@ -65,7 +63,6 @@ test_that("gen_mix_dist_maker", {
   check_funs(trafo_fun, sizes=c(2,1), mixdist)
   
   res <- gen_mix_dist_maker(
-    type = "general",
     families = c("normal", "student_t", "gumbel"),
     nr_distributions = 3L
   )
@@ -76,7 +73,6 @@ test_that("gen_mix_dist_maker", {
   check_funs(trafo_fun, sizes=c(2,1,2), mixdist)
   
   res <- gen_mix_dist_maker(
-    type = "general",
     families = c("normal", "student_t", "student_t_ls"),
     nr_distributions = 3L
   )
@@ -87,7 +83,6 @@ test_that("gen_mix_dist_maker", {
   check_funs(trafo_fun, sizes=c(2,1,3), mixdist)
   
   res <- gen_mix_dist_maker(
-    type = "same",
     families = c("normal"),
     nr_distributions = 3L
   )
@@ -119,7 +114,6 @@ test_that("methods", {
   
   minmod <- mixdistreg(
     y,
-    type = c("general"),
     families = c("student_t_ls", "gumbel", "student_t"),
     nr_comps = 3L,
     list_of_formulas = list(~1 + s(xa), ~1, ~1 + x1,
@@ -156,7 +150,6 @@ test_that("methods", {
   # test combination of dist and nr
   minmod <- mixdistreg(
     y,
-    type = c("general"),
     families = c("normal", "normal", "student_t"),
     nr_comps = 3L,
     list_of_formulas = list(~1 + s(xa), ~1 + x1,
