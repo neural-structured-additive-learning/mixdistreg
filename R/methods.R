@@ -138,11 +138,11 @@ match_which_param <- function(families, trafos, which_dist, which_param){
   
   sizes <- sapply(trafos, length)
   
-  if(length(sizes)>2 & which_dist!=2)
-    which_param <- sum(sizes[1:(which_dist-2)]) + which_param + 1L else
-      which_param <- which_param + 1L
+  if(which_dist > 2)
+    all_prior_dist_sizes <- sum(sizes[1:(which_dist-2)]) else
+      all_prior_dist_sizes <- 0
   
-  return(which_param)
+  return(all_prior_dist_sizes + which_param + 1L)
   
 }
 

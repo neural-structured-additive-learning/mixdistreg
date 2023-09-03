@@ -165,4 +165,21 @@ test_that("methods", {
   cf2 <- coef(minmod, which_dist = "normal2")
   expect_equal(names(cf2), c("x2", "(Intercept)"))
   
+  minmod <- mixdistreg(
+    y,
+    families = c("poisson", "poisson"),
+    nr_comps = 2L,
+    list_of_formulas = list(~1 + s(xa), 
+                            ~1 + x1
+    ),
+    formula_mixture = ~1,
+    data = data  
+  ) 
+  
+  cf1 <- coef(minmod, which_dist = "poisson1")
+  expect_equal(names(cf1), c("s(xa)", "(Intercept)"))
+  
+  cf2 <- coef(minmod, which_dist = "poisson2")
+  expect_equal(names(cf2), c("x1", "(Intercept)"))
+  
 })
